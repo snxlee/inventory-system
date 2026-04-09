@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { logoutAction } from "@/lib/actions";
 
 interface NavbarProps {
   user: { name: string; role: string };
@@ -31,6 +30,11 @@ export default function Navbar({ user }: NavbarProps) {
 
   const links = roleLinks[user.role] || [];
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/login";
+  };
+
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,11 +55,12 @@ export default function Navbar({ user }: NavbarProps) {
             <span className="hidden sm:block text-sm text-gray-600">
               {user.name} <span className="capitalize text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full ml-1">{user.role}</span>
             </span>
-            <form action={logoutAction}>
-              <button type="submit" className="text-sm text-red-600 hover:text-red-800 font-medium">
-                Logout
-              </button>
-            </form>
+            <button
+              onClick={handleLogout}
+              className="text-sm text-red-600 hover:text-red-800 font-medium"
+            >
+              Logout
+            </button>
             <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

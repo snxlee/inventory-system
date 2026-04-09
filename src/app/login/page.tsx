@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { loginAction } from "@/lib/actions";
 
 export default function LoginPage() {
   const [error, setError] = useState<string>("");
@@ -11,10 +10,20 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     const formData = new FormData(e.currentTarget);
-    const result = await loginAction(formData);
-    if (result?.error) {
-      setError(result.error);
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || "Login failed");
       setLoading(false);
+    } else {
+      window.location.href = "/dashboard";
     }
   };
 

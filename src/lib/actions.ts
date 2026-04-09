@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 
-export async function loginAction(formData: FormData) {
+export async function loginAction(_prevState: { error?: string } | undefined, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 

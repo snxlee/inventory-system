@@ -41,6 +41,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - `npm run build` - build the app for production
 - `npm run start` - run the production build
 - `npm run lint` - run ESLint
+- `npm run test:unit` - run Vitest unit and API tests
+- `npm run test:e2e` - run Playwright end-to-end tests
+- `npm run test` - run unit tests then E2E tests
+- `npm run test:ci` - run lint, build, unit tests, and E2E tests
 
 ## Environment Variables
 
@@ -67,3 +71,26 @@ After running the seed script, you can log in with these demo accounts:
 
 - The database is SQLite-based, so the local database file is created automatically the first time you migrate or seed.
 - If you reset the database, rerun the migration and seed commands above.
+
+## Testing
+
+1. Install dependencies and browsers.
+
+```bash
+npm install
+npx playwright install --with-deps chromium
+```
+
+2. Run unit tests.
+
+```bash
+npm run test:unit
+```
+
+3. Run E2E tests.
+
+```bash
+npm run test:e2e
+```
+
+The E2E runner starts the development server automatically using Playwright `webServer` config.

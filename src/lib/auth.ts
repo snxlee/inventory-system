@@ -2,18 +2,22 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET ||
-    (process.env.NODE_ENV === "production"
-      ? (() => { throw new Error("JWT_SECRET must be set in production"); })()
-      : "fallback-secret-for-development-only")
-);
+function getSecret() {
+  const value = process.env.JWT_SECRET;
+  if (value) return new TextEncoder().encode(value);
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET must be set in production");
+  }
+
+  return new TextEncoder().encode("fallback-secret-for-development-only");
+}
 
 export async function createSession(userId: string, role: string) {
   const token = await new SignJWT({ userId, role })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
-    .sign(secret);
+    .sign(getSecret());
 
   const cookieStore = await cookies();
   cookieStore.set("session", token, {
@@ -29,7 +33,7 @@ export async function getSession(): Promise<{ userId: string; role: string } | n
     const cookieStore = await cookies();
     const token = cookieStore.get("session")?.value;
     if (!token) return null;
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return { userId: payload.userId as string, role: payload.role as string };
   } catch {
     return null;

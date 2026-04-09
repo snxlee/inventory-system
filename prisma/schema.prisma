@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         String        @default("clerk") // clerk, auditor, manager, admin
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sales        Sale[]
+  activityLogs ActivityLog[]
+}
+
+model Product {
+  id              String           @id @default(cuid())
+  barcode         String           @unique
+  name            String
+  category        String           @default("General")
+  price           Float
+  cost            Float            @default(0)
+  quantity        Int              @default(0)
+  minQuantity     Int              @default(5)
+  unit            String           @default("pcs")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  saleItems       SaleItem[]
+  inventoryLogs   InventoryLog[]
+}
+
+model Member {
+  id        String   @id @default(cuid())
+  memberId  String   @unique
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sales     Sale[]
+}
+
+model Sale {
+  id         String     @id @default(cuid())
+  clerk      User       @relation(fields: [clerkId], references: [id])
+  clerkId    String
+  member     Member?    @relation(fields: [memberId], references: [id])
+  memberId   String?
+  total      Float
+  discount   Float      @default(0)
+  paymentMethod String  @default("cash")
+  status     String     @default("completed") // completed, voided
+  createdAt  DateTime   @default(now())
+  items      SaleItem[]
+}
+
+model SaleItem {
+  id        String   @id @default(cuid())
+  sale      Sale     @relation(fields: [saleId], references: [id])
+  saleId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Float
+  subtotal  Float
+}
+
+model InventoryLog {
+  id          String   @id @default(cuid())
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   String
+  type        String   // purchase, adjustment, sale, return
+  quantity    Int      // positive = in, negative = out
+  notes       String?
+  createdAt   DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}

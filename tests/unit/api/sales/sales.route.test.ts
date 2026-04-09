@@ -101,4 +101,41 @@ describe("/api/sales route", () => {
     expect(productUpdateMock).toHaveBeenCalledTimes(2);
     expect(inventoryLogCreateMock).toHaveBeenCalledTimes(2);
   });
+
+  it("POST returns 500 when payload is malformed", async () => {
+    getSessionMock.mockResolvedValueOnce({ userId: "clerk-1", role: "clerk" });
+
+    const response = await POST(
+      new Request("http://localhost/api/sales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId: "m1" }),
+      }),
+    );
+    const payload = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(500);
+    expect(payload.error).toBe("Failed to create sale");
+  });
+
+  it("POST returns 500 when sale creation fails", async () => {
+    getSessionMock.mockResolvedValueOnce({ userId: "clerk-1", role: "clerk" });
+    saleCreateMock.mockRejectedValueOnce(new Error("db unavailable"));
+
+    const response = await POST(
+      new Request("http://localhost/api/sales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{ productId: "p1", quantity: 1, price: 10 }],
+        }),
+      }),
+    );
+    const payload = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(500);
+    expect(payload.error).toBe("Failed to create sale");
+    expect(productUpdateMock).not.toHaveBeenCalled();
+    expect(inventoryLogCreateMock).not.toHaveBeenCalled();
+  });
 });

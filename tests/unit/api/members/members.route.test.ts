@@ -84,4 +84,21 @@ describe("/api/members route", () => {
     expect(response.status).toBe(201);
     expect(payload.name).toBe("Bob");
   });
+
+  it("POST returns 500 when DB create fails", async () => {
+    getSessionMock.mockResolvedValueOnce({ userId: "u2", role: "manager" });
+    createMock.mockRejectedValueOnce(new Error("db down"));
+
+    const response = await POST(
+      new Request("http://localhost/api/members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "Carol", memberId: "MEM-003" }),
+      }),
+    );
+    const payload = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(500);
+    expect(payload.error).toBe("Failed to create member");
+  });
 });

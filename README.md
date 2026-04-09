@@ -95,7 +95,7 @@ npm run test:e2e
 
 The E2E runner starts the development server automatically using Playwright `webServer` config.
 
-Current automated coverage includes API route tests for auth, products, members, inventory low-stock, and sales summary flows, plus E2E authentication success and failure scenarios.
+Current automated coverage includes API route tests for auth, products, members, member purchases, inventory low-stock, sales, and sales summary flows (including failure paths), plus E2E authentication success and failure scenarios.
 
 4. Run the full local CI-equivalent matrix.
 

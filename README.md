@@ -94,3 +94,13 @@ npm run test:e2e
 ```
 
 The E2E runner starts the development server automatically using Playwright `webServer` config.
+
+Current automated coverage includes API route tests for auth, products, members, inventory low-stock, and sales summary flows, plus E2E authentication success and failure scenarios.
+
+4. Run the full local CI-equivalent matrix.
+
+```bash
+npm run test:ci
+```
+
+GitHub Actions CI is configured in `.github/workflows/ci.yml` and runs migration, seed, lint, build, unit tests, and E2E tests on pushes and pull requests.

@@ -127,8 +127,8 @@ export default function POSClient({
       <h1 className="text-2xl font-bold text-gray-800">Point of Sale</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard title="Today&apos;s Sales" value={todaySales} icon="🛒" color="blue" />
-        <StatCard title="Today&apos;s Revenue" value={`₱${todayRevenue.toFixed(2)}`} icon="💰" color="green" />
+        <StatCard title="Today's Sales" value={todaySales} icon="🛒" color="blue" />
+        <StatCard title="Today's Revenue" value={`₱${todayRevenue.toFixed(2)}`} icon="💰" color="green" />
         <StatCard
           title="Low Stock Items"
           value={lowStockCount}

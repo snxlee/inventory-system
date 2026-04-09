@@ -3,7 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret"
+  process.env.JWT_SECRET ||
+    (process.env.NODE_ENV === "production"
+      ? (() => { throw new Error("JWT_SECRET must be set in production"); })()
+      : "fallback-secret-for-development-only")
 );
 
 export async function createSession(userId: string, role: string) {
